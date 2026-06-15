@@ -6,7 +6,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.AABB;
 
 import java.net.URI;
@@ -36,7 +40,7 @@ public class AlbedoChatManager {
     private static final Map<UUID, List<ChatMessage>> histories = new ConcurrentHashMap<>();
     private static final int MAX_HISTORY = 16;
 
-    private static final String SYSTEM_PROMPT = """
+    private static final String CHARACTER_PROMPT = """
             你是雅儿贝德（Albedo），纳萨力克大坟墓的守护者总管，种族是魅魔。
 
             你的主人是与你对话的玩家——纳萨力克的最高统治者，无上至尊。
@@ -109,9 +113,10 @@ public class AlbedoChatManager {
             history.subList(0, history.size() - MAX_HISTORY).clear();
         }
 
+        String gameContext = buildGameContext(player, boss);
         List<ChatMessage> snapshot = List.copyOf(history);
 
-        CompletableFuture.supplyAsync(() -> callDeepSeek(snapshot))
+        CompletableFuture.supplyAsync(() -> callDeepSeek(gameContext, snapshot))
                 .thenAccept(response -> {
                     if (response != null && !response.isEmpty()) {
                         history.add(new ChatMessage("assistant", response));
@@ -135,13 +140,106 @@ public class AlbedoChatManager {
         return bosses.get(0);
     }
 
-    private static String callDeepSeek(List<ChatMessage> history) {
+    private static String buildGameContext(ServerPlayer player, AlbedoBoss boss) {
+        var level = (ServerLevel) player.level();
+        var sb = new StringBuilder();
+        sb.append("【当前游戏状态，可据此回答玩家问题】\n");
+
+        // Time
+        long gameTime = level.getGameTime();
+        long dayTime = gameTime % 24000;
+        String timeStr;
+        if (dayTime < 1000) timeStr = "清晨";
+        else if (dayTime < 6000) timeStr = "白天";
+        else if (dayTime < 7000) timeStr = "正午";
+        else if (dayTime < 12000) timeStr = "下午";
+        else if (dayTime < 13000) timeStr = "日落";
+        else if (dayTime < 18000) timeStr = "夜晚";
+        else if (dayTime < 19000) timeStr = "深夜";
+        else timeStr = "凌晨";
+        sb.append("- 时间：").append(timeStr).append("（第").append(gameTime / 24000).append("天）\n");
+
+        // Weather
+        if (level.isThundering()) sb.append("- 天气：雷暴\n");
+        else if (level.isRaining()) sb.append("- 天气：下雨\n");
+        else sb.append("- 天气：晴朗\n");
+
+        // Dimension
+        String dimStr = level.dimension().toString();
+        String dimName = "主世界";
+        if (dimStr.contains("the_nether")) dimName = "下界";
+        else if (dimStr.contains("the_end")) dimName = "末地";
+        sb.append("- 维度：").append(dimName).append("\n");
+
+        // Biome
+        Biome biome = level.getBiome(player.blockPosition()).value();
+        String biomeName = biome.toString();
+        if (biomeName.contains("plains")) biomeName = "平原";
+        else if (biomeName.contains("forest")) biomeName = "森林";
+        else if (biomeName.contains("desert")) biomeName = "沙漠";
+        else if (biomeName.contains("ocean")) biomeName = "海洋";
+        else if (biomeName.contains("mountain")) biomeName = "山地";
+        else if (biomeName.contains("snow")) biomeName = "雪地";
+        else if (biomeName.contains("swamp")) biomeName = "沼泽";
+        else if (biomeName.contains("jungle")) biomeName = "丛林";
+        else if (biomeName.contains("dark")) biomeName = "黑森林";
+        else if (biomeName.contains("nether")) biomeName = "下界荒地";
+        else if (biomeName.contains("end")) biomeName = "末地";
+        else biomeName = "未知";
+        sb.append("- 生物群系：").append(biomeName).append("\n");
+        sb.append("- Y坐标：").append(player.blockPosition().getY()).append("\n");
+
+        // Player stats
+        sb.append("- 主人生命值：").append((int) player.getHealth()).append("/").append((int) player.getMaxHealth()).append("\n");
+        sb.append("- 主人饱食度：").append(player.getFoodData().getFoodLevel()).append("/20\n");
+        sb.append("- 主人经验等级：").append(player.experienceLevel).append("\n");
+
+        // Held item
+        ItemStack held = player.getMainHandItem();
+        if (!held.isEmpty()) {
+            sb.append("- 主人手持：").append(held.getCount()).append("x ")
+                    .append(held.getDisplayName().getString()).append("\n");
+        }
+
+        // Armor
+        int armor = player.getArmorValue();
+        if (armor > 0) sb.append("- 主人护甲值：").append(armor).append("\n");
+
+        // Albedo state
+        sb.append("- 雅儿贝德生命值：").append((int) boss.getHealth()).append("/").append((int) boss.getMaxHealth()).append("\n");
+        sb.append("- 雅儿贝德当前阶段：第").append(boss.getPhase()).append("阶段\n");
+        String followState = switch (boss.getFollowStateName()) {
+            case "FOLLOW" -> "跟随主人中";
+            case "PATROL" -> "巡逻中";
+            case "SIT" -> "待机中";
+            default -> "未知";
+        };
+        sb.append("- 雅儿贝德当前状态：").append(followState).append("\n");
+
+        // Nearby hostiles
+        List<Monster> hostiles = level.getEntitiesOfClass(Monster.class,
+                player.getBoundingBox().inflate(20.0),
+                m -> m.isAlive() && m.distanceTo(player) <= 20);
+        if (!hostiles.isEmpty()) {
+            sb.append("- 附近敌对生物（20格内）：");
+            var counts = new java.util.HashMap<String, Integer>();
+            for (var m : hostiles) {
+                counts.merge(m.getName().getString(), 1, Integer::sum);
+            }
+            counts.forEach((name, count) -> sb.append(name).append("x").append(count).append(" "));
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    private static String callDeepSeek(String gameContext, List<ChatMessage> history) {
         try {
             JsonArray messages = new JsonArray();
 
             JsonObject sysMsg = new JsonObject();
             sysMsg.addProperty("role", "system");
-            sysMsg.addProperty("content", SYSTEM_PROMPT);
+            sysMsg.addProperty("content", CHARACTER_PROMPT + "\n" + gameContext);
             messages.add(sysMsg);
 
             for (ChatMessage msg : history) {

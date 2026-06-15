@@ -176,6 +176,14 @@ public class AlbedoBoss extends Monster {
         return followState == FollowState.SIT;
     }
 
+    public String getFollowStateName() {
+        return switch (followState) {
+            case FOLLOW -> "FOLLOW";
+            case PATROL -> "PATROL";
+            case SIT -> "SIT";
+        };
+    }
+
     public LivingEntity getOwner() {
         if (ownerUUID == null) return null;
         return level().getPlayerByUUID(ownerUUID);
