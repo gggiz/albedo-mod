@@ -31,6 +31,7 @@ public class AlbedoChatManager {
 
     private static String apiKey;
     private static String apiUrl = DEFAULT_API_URL;
+    private static Path configPath;
 
     private static final Map<UUID, List<ChatMessage>> histories = new ConcurrentHashMap<>();
     private static final int MAX_HISTORY = 16;
@@ -58,12 +59,19 @@ public class AlbedoChatManager {
 
     private record ChatMessage(String role, String content) {}
 
+    public static boolean isEnabled() { return apiKey != null && !apiKey.isEmpty(); }
+
+    public static void setKey(String key) {
+        apiKey = key;
+        saveConfig();
+    }
+
     public static void loadConfig(Path configDir) {
-        Path configFile = configDir.resolve("albedo.properties");
-        if (Files.exists(configFile)) {
+        configPath = configDir.resolve("albedo.properties");
+        if (Files.exists(configPath)) {
             try {
                 var props = new java.util.Properties();
-                props.load(Files.newBufferedReader(configFile));
+                props.load(Files.newBufferedReader(configPath));
                 apiKey = props.getProperty("deepseek.api.key", "");
                 apiUrl = props.getProperty("deepseek.api.url", DEFAULT_API_URL);
                 if (!apiKey.isEmpty()) {
@@ -72,6 +80,18 @@ public class AlbedoChatManager {
             } catch (Exception e) {
                 AlbedoMod.LOGGER.warn("Failed to load albedo.properties: {}", e.getMessage());
             }
+        }
+    }
+
+    private static void saveConfig() {
+        if (configPath == null) return;
+        try {
+            var props = new java.util.Properties();
+            props.setProperty("deepseek.api.key", apiKey != null ? apiKey : "");
+            props.setProperty("deepseek.api.url", apiUrl);
+            props.store(Files.newBufferedWriter(configPath), "Albedo mod config");
+        } catch (Exception e) {
+            AlbedoMod.LOGGER.warn("Failed to save albedo.properties: {}", e.getMessage());
         }
     }
 
