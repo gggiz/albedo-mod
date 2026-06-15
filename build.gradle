@@ -1,0 +1,40 @@
+buildscript {
+    repositories {
+        maven { url = "https://maven.fabricmc.net/" }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.fabricmc:fabric-loom:1.17.11"
+    }
+}
+
+apply plugin: "net.fabricmc.fabric-loom"
+
+group = "com.albedo"
+version = "1.0.0"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:26.1"
+    implementation "net.fabricmc:fabric-loader:0.18.4"
+    implementation "net.fabricmc.fabric-api:fabric-api:0.145.1+26.1"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release = 25
+}
+
+jar {
+    from("LICENSE") {
+        rename { "LICENSE_${project.name}" }
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "entity.albedo.albedo": "Albedo, Guardian Overseer",
+  "item.albedo.hell_abyss": "Hell Abyss",
+  "item.albedo.succubus_horn": "Succubus Horn",
+  "item.albedo.guardian_shard": "Guardian Shard",
+  "subtitles.entity.albedo.sweep": "Albedo sweeps",
+  "subtitles.entity.albedo.thrust": "Albedo thrusts",
+  "subtitles.entity.albedo.wave": "Abyss wave approaches",
+  "subtitles.entity.albedo.judgment": "Final Judgment!",
+  "subtitles.entity.albedo.phase_change": "Albedo's armor cracks",
+  "subtitles.entity.albedo.death": "Albedo falls",
+  "subtitles.entity.albedo.hurt": "Albedo hurts",
+  "subtitles.entity.albedo.ambient": "Albedo mutters"
+}

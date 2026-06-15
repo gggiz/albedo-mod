@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:entity",
+  "random_sequence": "albedo:entities/albedo",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "albedo:succubus_horn"
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "albedo:hell_abyss",
+          "conditions": [
+            {
+              "condition": "minecraft:random_chance",
+              "chance": 0.25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 3.0,
+        "max": 5.0
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "albedo:guardian_shard"
+        }
+      ]
+    }
+  ]
+}

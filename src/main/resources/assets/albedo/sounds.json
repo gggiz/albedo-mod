@@ -1,0 +1,34 @@
+{
+  "entity.albedo.sweep": {
+    "subtitle": "subtitles.entity.albedo.sweep",
+    "sounds": ["albedo:sweep"]
+  },
+  "entity.albedo.thrust": {
+    "subtitle": "subtitles.entity.albedo.thrust",
+    "sounds": ["albedo:thrust"]
+  },
+  "entity.albedo.wave": {
+    "subtitle": "subtitles.entity.albedo.wave",
+    "sounds": ["albedo:wave"]
+  },
+  "entity.albedo.judgment": {
+    "subtitle": "subtitles.entity.albedo.judgment",
+    "sounds": ["albedo:judgment"]
+  },
+  "entity.albedo.phase_change": {
+    "subtitle": "subtitles.entity.albedo.phase_change",
+    "sounds": ["albedo:phase_change"]
+  },
+  "entity.albedo.death": {
+    "subtitle": "subtitles.entity.albedo.death",
+    "sounds": ["albedo:death"]
+  },
+  "entity.albedo.hurt": {
+    "subtitle": "subtitles.entity.albedo.hurt",
+    "sounds": ["albedo:hurt1", "albedo:hurt2", "albedo:hurt3"]
+  },
+  "entity.albedo.ambient": {
+    "subtitle": "subtitles.entity.albedo.ambient",
+    "sounds": ["albedo:ambient1", "albedo:ambient2"]
+  }
+}
