@@ -162,6 +162,7 @@ public class AlbedoBoss extends Monster {
                 player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("§5雅儿贝德 §a跟随中"));
             }
         }
+        persistState();
         return InteractionResult.SUCCESS;
     }
 
@@ -171,6 +172,7 @@ public class AlbedoBoss extends Monster {
 
     public void setOwnerUUID(UUID uuid) {
         this.ownerUUID = uuid;
+        persistState();
     }
 
     public boolean isSitting() {
@@ -411,8 +413,12 @@ public class AlbedoBoss extends Monster {
             }
         }
 
-        // Apply permanent effects on first tick (constructor is too early)
+        // 从实体标签恢复主人信息（重启/NBT加载后）
         if (tickCount == 1) {
+            restoreState();
+            if (ownerUUID != null) {
+                this.setPersistenceRequired();
+            }
             this.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, -1, 3, false, false));
             this.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 0, false, false));
             this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, -1, 0, false, false));
@@ -525,6 +531,33 @@ public class AlbedoBoss extends Monster {
                     5, 2.0, 2.0, 2.0, 0.5);
         }
         super.die(source);
+    }
+
+    private static final String TAG_OWNER = "albedo_owner";
+    private static final String TAG_STATE = "albedo_state";
+    private static final String TAG_PATROL = "albedo_patrol";
+
+    private void persistState() {
+        // 清除旧标签
+        entityTags().removeIf(t -> t.startsWith("albedo_"));
+        if (ownerUUID != null) {
+            addTag(TAG_OWNER + ":" + ownerUUID);
+        }
+        addTag(TAG_STATE + ":" + followState.name());
+        addTag(TAG_PATROL + ":" + patrolCenter.x + "," + patrolCenter.y + "," + patrolCenter.z);
+    }
+
+    private void restoreState() {
+        for (String tag : entityTags()) {
+            if (tag.startsWith(TAG_OWNER + ":")) {
+                try { ownerUUID = UUID.fromString(tag.substring(TAG_OWNER.length() + 1)); } catch (Exception ignored) {}
+            } else if (tag.startsWith(TAG_STATE + ":")) {
+                try { followState = FollowState.valueOf(tag.substring(TAG_STATE.length() + 1)); } catch (Exception ignored) {}
+            } else if (tag.startsWith(TAG_PATROL + ":")) {
+                String[] parts = tag.substring(TAG_PATROL.length() + 1).split(",");
+                try { patrolCenter = new Vec3(Double.parseDouble(parts[0]), Double.parseDouble(parts[1]), Double.parseDouble(parts[2])); } catch (Exception ignored) {}
+            }
+        }
     }
 
 }
