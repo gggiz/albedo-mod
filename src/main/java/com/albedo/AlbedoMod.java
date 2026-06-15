@@ -1,10 +1,13 @@
 package com.albedo;
 
+import com.albedo.chat.AlbedoChatManager;
 import com.albedo.entity.AlbedoBoss;
 import com.albedo.item.AlbedoItems;
 import com.albedo.sound.AlbedoSounds;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -35,6 +38,11 @@ public class AlbedoMod implements ModInitializer {
         AlbedoItems.init();
         AlbedoSounds.init();
         FabricDefaultAttributeRegistry.register(ALBEDO, AlbedoBoss.createAttributes());
+
+        AlbedoChatManager.loadConfig(FabricLoader.getInstance().getConfigDir());
+        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) ->
+                AlbedoChatManager.onPlayerChat(sender, message.signedContent()));
+
         LOGGER.info("Albedo boss ready.");
     }
 
