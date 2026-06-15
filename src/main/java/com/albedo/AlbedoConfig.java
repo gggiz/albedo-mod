@@ -20,7 +20,9 @@ public class AlbedoConfig {
     public static final int CLONE_COOLDOWN = 50;      // ~2.5s
     public static final int JUDGMENT_COOLDOWN = 60;   // ~3s
 
-    // Attack damage
+    // Follow mode
+    public static final double TELEPORT_DISTANCE = 15.0;
+    public static final double FOLLOW_DISTANCE = 6.0;
     public static final float SWEEP_DAMAGE = 16.0f;
     public static final float THRUST_DAMAGE = 22.0f;
     public static final float WAVE_DAMAGE = 12.0f;

@@ -376,7 +376,22 @@ public class AlbedoBoss extends Monster {
                     getNavigation().moveTo(patrolCenter.x, patrolCenter.y, patrolCenter.z, 1.2);
                 }
             } else {
-                // Only override target if no current target or current target is dead
+                // 跟随模式：距离过远立即传送
+                double dist = distanceTo(owner);
+                if (dist > AlbedoConfig.TELEPORT_DISTANCE) {
+                    setTarget(null);
+                    setAttackState(0);
+                    getNavigation().stop();
+                    setDeltaMovement(Vec3.ZERO);
+                    teleportTo(owner.getX(), owner.getY(), owner.getZ());
+                    if (level() instanceof ServerLevel sl) {
+                        sl.sendParticles(ParticleTypes.PORTAL,
+                                getX(), getY() + 1, getZ(),
+                                15, 0.5, 0.5, 0.5, 0.1);
+                    }
+                    return;
+                }
+
                 LivingEntity target = getTarget();
                 LivingEntity ownerTarget = owner.getLastHurtMob();
                 if (ownerTarget != null && ownerTarget.isAlive()
@@ -389,17 +404,7 @@ public class AlbedoBoss extends Monster {
                         setTarget(ownerTarget);
                     }
                 } else if (target == null || !target.isAlive()) {
-                    // Follow owner
-                    double dist = distanceTo(owner);
-                    if (dist > 12.0) {
-                        // Teleport if too far
-                        teleportTo(owner.getX(), owner.getY(), owner.getZ());
-                        if (level() instanceof ServerLevel sl) {
-                            sl.sendParticles(ParticleTypes.PORTAL,
-                                    getX(), getY() + 1, getZ(),
-                                    15, 0.5, 0.5, 0.5, 0.1);
-                        }
-                    } else if (dist > 6.0) {
+                    if (dist > 6.0) {
                         getNavigation().moveTo(owner, 1.2);
                     }
                 }
