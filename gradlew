@@ -6,7 +6,8 @@
 
 APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
-DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+DEFAULT_JVM_OPTS="-Xmx64m -Xms64m"
 DIRNAME=`dirname "$0"`
 CLASSPATH=$DIRNAME/gradle/wrapper/gradle-wrapper.jar
-exec "\"C:/Program Files/Java/jdk-25/bin/java\"" $DEFAULT_JVM_OPTS -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
+JAVACMD="${JAVA_HOME:-}/bin/java"
+exec "$JAVACMD" $DEFAULT_JVM_OPTS -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"

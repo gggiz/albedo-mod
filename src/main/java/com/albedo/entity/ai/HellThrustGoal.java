@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -93,6 +94,7 @@ public class HellThrustGoal extends Goal {
             AABB hitbox = boss.getBoundingBox().inflate(1.5, 0.5, 1.5);
             boss.level().getEntities(boss, hitbox,
                     e -> e instanceof LivingEntity && e != boss && !(e instanceof AlbedoBoss)
+                            && e.getType() != EntityType.CAT && e.getType() != EntityType.WOLF
             ).forEach(entity -> {
                 if (hitEntities.add(entity.getUUID())) {
                     boss.swing(InteractionHand.MAIN_HAND);

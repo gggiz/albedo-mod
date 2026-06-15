@@ -6,6 +6,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -106,6 +107,7 @@ public class AbyssWaveGoal extends Goal {
                     level.getEntities(boss,
                             AABB.ofSize(wavePos, 2.5, 2.0, 2.5),
                             e -> e instanceof LivingEntity && e != boss && !(e instanceof AlbedoBoss)
+                                    && e.getType() != EntityType.CAT && e.getType() != EntityType.WOLF
                     ).forEach(entity -> {
                         if (hitEntities.add(entity.getUUID())) {
                             entity.hurt(

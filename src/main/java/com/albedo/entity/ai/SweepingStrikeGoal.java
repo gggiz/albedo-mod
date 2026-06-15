@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -87,6 +88,7 @@ public class SweepingStrikeGoal extends Goal {
             boss.level().getEntities(boss,
                     AABB.ofSize(pos, range * 2, 2, range * 2),
                     e -> e instanceof LivingEntity && e != boss && !(e instanceof AlbedoBoss)
+                            && e.getType() != EntityType.CAT && e.getType() != EntityType.WOLF
                             && boss.hasLineOfSight(e)
                             && forward.dot(e.position().subtract(pos).normalize()) > 0.0
             ).forEach(entity -> {

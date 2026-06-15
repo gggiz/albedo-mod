@@ -27,6 +27,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -124,7 +125,7 @@ public class AlbedoBoss extends Monster {
 
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this, Player.class, AlbedoBoss.class));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true,
-                (living, level) -> !(living instanceof Player) && !(living instanceof AlbedoBoss) && !living.entityTags().contains("albedo_clone")));
+                (living, level) -> !(living instanceof Player) && !(living instanceof AlbedoBoss) && living.getType() != EntityType.CAT && living.getType() != EntityType.WOLF && !living.entityTags().contains("albedo_clone")));
     }
 
     @Override
@@ -355,6 +356,8 @@ public class AlbedoBoss extends Monster {
                             getBoundingBox().inflate(12),
                             e -> e != this && !(e instanceof Player)
                                     && !(e instanceof AlbedoBoss)
+                                    && e.getType() != EntityType.CAT
+                                    && e.getType() != EntityType.WOLF
                                     && !e.entityTags().contains("albedo_clone")
                                     && e.isAlive()
                                     && hasLineOfSight(e)
@@ -379,6 +382,8 @@ public class AlbedoBoss extends Monster {
                 if (ownerTarget != null && ownerTarget.isAlive()
                         && !(ownerTarget instanceof Player)
                         && !(ownerTarget instanceof AlbedoBoss)
+                        && ownerTarget.getType() != EntityType.CAT
+                        && ownerTarget.getType() != EntityType.WOLF
                         && !ownerTarget.entityTags().contains("albedo_clone")) {
                     if (target == null || !target.isAlive() || target.distanceTo(owner) > 20) {
                         setTarget(ownerTarget);
