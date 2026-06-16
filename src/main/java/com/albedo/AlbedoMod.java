@@ -3,11 +3,14 @@ package com.albedo;
 import com.albedo.chat.AlbedoChatManager;
 import com.albedo.entity.AlbedoBoss;
 import com.albedo.item.AlbedoItems;
+import com.albedo.network.BuildDataPayload;
 import com.albedo.sound.AlbedoSounds;
 import net.fabricmc.api.ModInitializer;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
@@ -16,6 +19,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import org.slf4j.Logger;
@@ -63,6 +68,20 @@ public class AlbedoMod implements ModInitializer {
                             return 1;
                         })
                 ));
+
+        // 注册网络包：客户端 → 服务端 发送投影数据
+        PayloadTypeRegistry.serverboundPlay().register(BuildDataPayload.TYPE, BuildDataPayload.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(BuildDataPayload.TYPE, (BuildDataPayload payload, ServerPlayNetworking.Context context) -> {
+            ServerLevel level = (ServerLevel) context.player().level();
+            Entity entity = level.getEntity(payload.bossId());
+            if (entity instanceof AlbedoBoss boss && boss.isBuilding()) {
+                boss.receiveBuildData(payload);
+                LOGGER.info("收到建造数据: {} 个方块, 原点={}", payload.blocks().size(), payload.origin());
+            } else {
+                LOGGER.warn("收到建造数据但boss不在建造状态: entity={}, isBuilding={}",
+                        entity != null, entity instanceof AlbedoBoss b && b.isBuilding());
+            }
+        });
 
         LOGGER.info("Albedo boss ready.");
     }

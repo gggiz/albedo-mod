@@ -20,6 +20,12 @@ public class AlbedoConfig {
     public static final int CLONE_COOLDOWN = 50;      // ~2.5s
     public static final int JUDGMENT_COOLDOWN = 60;   // ~3s
 
+    // Build mode
+    public static final int BUILD_COOLDOWN = 100;        // 建造冷却 (ticks)
+    public static final int BUILD_BLOCKS_PER_TICK = 3;   // 每 tick 放置方块数
+    public static final int BUILD_WARMUP = 20;            // 准备阶段 ticks
+    public static final int BUILD_RANGE = 40;             // 建造时搜寻投影的范围
+
     // Follow mode
     public static final double TELEPORT_DISTANCE = 15.0;
     public static final double FOLLOW_DISTANCE = 6.0;

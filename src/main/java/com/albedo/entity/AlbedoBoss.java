@@ -1,7 +1,10 @@
 package com.albedo.entity;
 
 import com.albedo.AlbedoConfig;
+import com.albedo.AlbedoMod;
 import com.albedo.entity.ai.*;
+import com.albedo.network.BuildDataPayload;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -33,9 +36,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import com.albedo.item.AlbedoItems;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,14 +52,25 @@ public class AlbedoBoss extends Monster {
             SynchedEntityData.defineId(AlbedoBoss.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_ATTACK_STATE =
             SynchedEntityData.defineId(AlbedoBoss.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_BUILD_PROGRESS =
+            SynchedEntityData.defineId(AlbedoBoss.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_FOLLOW_STATE =
+            SynchedEntityData.defineId(AlbedoBoss.class, EntityDataSerializers.INT);
 
-    private enum FollowState { FOLLOW, PATROL, SIT }
+    private enum FollowState { FOLLOW, PATROL, SIT, BUILD }
 
     private final ServerBossEvent bossBar;
     private final Map<String, Integer> cooldowns = new HashMap<>();
     private UUID ownerUUID;
     private FollowState followState = FollowState.FOLLOW;
     private Vec3 patrolCenter = Vec3.ZERO;
+    private boolean stateRestored = false;
+
+    // 从客户端接收的建造计划
+    public record BuildPlan(BlockPos pos, BlockState state) {}
+    private List<BuildPlan> buildPlan = null;
+    private BlockPos buildOrigin = null;
+    private int buildSx, buildSy, buildSz;
 
     public AlbedoBoss(EntityType<? extends Monster> type, Level level) {
         super(type, level);
@@ -103,6 +121,8 @@ public class AlbedoBoss extends Monster {
         super.defineSynchedData(builder);
         builder.define(DATA_PHASE, 1);
         builder.define(DATA_ATTACK_STATE, 0);
+        builder.define(DATA_BUILD_PROGRESS, 0);
+        builder.define(DATA_FOLLOW_STATE, 0);
     }
 
     @Override
@@ -118,19 +138,35 @@ public class AlbedoBoss extends Monster {
 
         // Melee chase (lowest priority among attacks - fires when skills are on cooldown)
         this.goalSelector.addGoal(5, new AlbedoMeleeAttackGoal(this));
+        // 建造模式
+        this.goalSelector.addGoal(5, new StructureBuildGoal(this));
 
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0));
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 16.0f));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
 
-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, Player.class, AlbedoBoss.class));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, Player.class, AlbedoBoss.class) {
+            @Override
+            public boolean canUse() {
+                if (((AlbedoBoss) this.mob).isBuilding()) return false;
+                return super.canUse();
+            }
+        });
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true,
-                (living, level) -> !(living instanceof Player) && !(living instanceof AlbedoBoss) && living.getType() != EntityType.CAT && living.getType() != EntityType.WOLF && !living.entityTags().contains("albedo_clone")));
+                (living, level) -> !(living instanceof Player) && !(living instanceof AlbedoBoss)
+                        && living.getType() != EntityType.CAT && living.getType() != EntityType.WOLF
+                        && !living.entityTags().contains("albedo_clone")) {
+            @Override
+            public boolean canUse() {
+                if (((AlbedoBoss) this.mob).isBuilding()) return false;
+                return super.canUse();
+            }
+        });
     }
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (player.level().isClientSide()) return InteractionResult.SUCCESS;
+        if (player.level().isClientSide()) return InteractionResult.CONSUME;
 
         if (getOwnerUUID().isEmpty()) {
             setOwnerUUID(player.getUUID());
@@ -143,25 +179,44 @@ public class AlbedoBoss extends Monster {
 
         if (!getOwnerUUID().get().equals(player.getUUID())) return InteractionResult.PASS;
 
+        AlbedoMod.LOGGER.info("Boss#{} 收到交互, 当前状态={}, 交互玩家={}",
+                getId(), followState, player.getName().getString());
+
         switch (followState) {
             case FOLLOW -> {
                 followState = FollowState.PATROL;
                 patrolCenter = player.position();
                 setTarget(null);
+                clearBuildPlan();
+                AlbedoMod.LOGGER.info("Boss#{} FOLLOW→PATROL", getId());
                 player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("§5雅儿贝德 §e巡逻中"));
             }
             case PATROL -> {
                 followState = FollowState.SIT;
                 setTarget(null);
                 getNavigation().stop();
+                clearBuildPlan();
+                AlbedoMod.LOGGER.info("Boss#{} PATROL→SIT", getId());
                 player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("§5雅儿贝德 §7待机中"));
             }
             case SIT -> {
+                followState = FollowState.BUILD;
+                setTarget(null);
+                setBuildProgress(0);
+                AlbedoMod.LOGGER.info("Boss#{} SIT→BUILD", getId());
+                player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("§5雅儿贝德 §d建造模式 §7(读取投影中...)"));
+            }
+            case BUILD -> {
                 followState = FollowState.FOLLOW;
                 setTarget(null);
+                setBuildProgress(0);
+                clearBuildPlan();
+                AlbedoMod.LOGGER.info("Boss#{} BUILD→FOLLOW", getId());
                 player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("§5雅儿贝德 §a跟随中"));
             }
         }
+        AlbedoMod.LOGGER.info("Boss#{} 状态变更完成, 新状态={}", getId(), followState);
+        entityData.set(DATA_FOLLOW_STATE, followState.ordinal());
         persistState();
         return InteractionResult.SUCCESS;
     }
@@ -184,7 +239,49 @@ public class AlbedoBoss extends Monster {
             case FOLLOW -> "FOLLOW";
             case PATROL -> "PATROL";
             case SIT -> "SIT";
+            case BUILD -> "BUILD";
         };
+    }
+
+    public int getBuildProgress() {
+        return entityData.get(DATA_BUILD_PROGRESS);
+    }
+
+    public void setBuildProgress(int progress) {
+        entityData.set(DATA_BUILD_PROGRESS, progress);
+    }
+
+    public int getFollowStateOrdinal() {
+        return entityData.get(DATA_FOLLOW_STATE);
+    }
+
+    public boolean isBuilding() {
+        return followState == FollowState.BUILD;
+    }
+
+    public void receiveBuildData(BuildDataPayload payload) {
+        this.buildOrigin = payload.origin();
+        this.buildSx = payload.sx();
+        this.buildSy = payload.sy();
+        this.buildSz = payload.sz();
+        this.buildPlan = new ArrayList<>(payload.blocks().size());
+        for (var e : payload.blocks()) {
+            BlockPos pos = payload.origin().offset(e.rx(), e.ry(), e.rz());
+            BlockState state = Block.stateById(e.stateId());
+            this.buildPlan.add(new BuildPlan(pos, state));
+        }
+    }
+
+    public List<BuildPlan> getBuildPlan() { return buildPlan; }
+    public BlockPos getBuildOrigin() { return buildOrigin; }
+    public int getBuildSx() { return buildSx; }
+    public int getBuildSy() { return buildSy; }
+    public int getBuildSz() { return buildSz; }
+    public boolean hasBuildPlan() { return buildPlan != null && !buildPlan.isEmpty(); }
+
+    public void clearBuildPlan() {
+        buildPlan = null;
+        buildOrigin = null;
     }
 
     public LivingEntity getOwner() {
@@ -351,6 +448,9 @@ public class AlbedoBoss extends Monster {
                 setDeltaMovement(Vec3.ZERO);
                 xxa = 0;
                 zza = 0;
+            } else if (followState == FollowState.BUILD) {
+                // 建造模式：不传送、不索敌、不打怪，由建造 AI 全权控制
+                setTarget(null);
             } else if (followState == FollowState.PATROL) {
                 LivingEntity target = getTarget();
                 if (target == null || !target.isAlive()) {
@@ -414,7 +514,8 @@ public class AlbedoBoss extends Monster {
         }
 
         // 从实体标签恢复主人信息（重启/NBT加载后）
-        if (tickCount == 1) {
+        if (!stateRestored) {
+            stateRestored = true;
             restoreState();
             if (ownerUUID != null) {
                 this.setPersistenceRequired();
@@ -450,10 +551,25 @@ public class AlbedoBoss extends Monster {
         }
 
         this.bossBar.setProgress(getHealth() / getMaxHealth());
-        this.bossBar.setName(getDisplayName().copy()
-                .append(" §8[§5P" + getPhase() + "§8]"));
+        if (isBuilding() && !hasBuildPlan()) {
+            this.bossBar.setName(getDisplayName().copy()
+                    .append(" §8[§7等待投影数据...§8]"));
+        } else if (isBuilding() && hasBuildPlan()) {
+            this.bossBar.setName(getDisplayName().copy()
+                    .append(" §8[§d建造中 " + getBuildProgress() + "%§8]"));
+        } else {
+            this.bossBar.setName(getDisplayName().copy()
+                    .append(" §8[§5P" + getPhase() + "§8]"));
+        }
         // Tick cooldowns
         cooldowns.replaceAll((k, v) -> v > 0 ? v - 1 : 0);
+
+        // 定期输出状态日志用于调试
+        if (tickCount % 200 == 0) {
+            AlbedoMod.LOGGER.info("Boss#{} 状态: followState={}, isBuilding={}, hasBuildPlan={}, target={}",
+                    getId(), followState, isBuilding(), hasBuildPlan(),
+                    getTarget() != null ? getTarget().getName().getString() : "null");
+        }
     }
 
     public boolean isClone() {
@@ -558,6 +674,7 @@ public class AlbedoBoss extends Monster {
                 try { patrolCenter = new Vec3(Double.parseDouble(parts[0]), Double.parseDouble(parts[1]), Double.parseDouble(parts[2])); } catch (Exception ignored) {}
             }
         }
+        entityData.set(DATA_FOLLOW_STATE, followState.ordinal());
     }
 
 }
