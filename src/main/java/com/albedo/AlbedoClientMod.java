@@ -16,12 +16,15 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class AlbedoClientMod implements ClientModInitializer {
     private static final Map<Integer, Integer> RETRY_COOLDOWN = new HashMap<>();
-    private static final int RETRY_INTERVAL = 60; // 失败后每3秒重试
+    private static final int RETRY_INTERVAL = 60;
+    private static final Set<Integer> SENT_BUILD_DATA = new HashSet<>();
     private static int logTick = 0;
 
     @Override
@@ -45,14 +48,17 @@ public class AlbedoClientMod implements ClientModInitializer {
 
                 if (stateOrdinal != 3) {
                     RETRY_COOLDOWN.remove(bossId);
+                    SENT_BUILD_DATA.remove(bossId);
                     continue;
                 }
 
-                // 0=等待首次数据, 100=建造完成等待下个投影, 中间值=正在建造中不打扰
+                // 本轮 BUILD 已发送过数据，不重复发送，等玩家切模式重置
+                if (SENT_BUILD_DATA.contains(bossId)) continue;
+
+                // 0=等待首次数据, 100=建造完成, 中间值=正在建造中不打扰
                 int progress = boss.getBuildProgress();
                 if (progress > 0 && progress < 100) continue;
 
-                // 失败后冷却重试，避免刷屏
                 int cd = RETRY_COOLDOWN.getOrDefault(bossId, 0);
                 if (cd > 0) {
                     RETRY_COOLDOWN.put(bossId, cd - 1);
@@ -132,7 +138,7 @@ public class AlbedoClientMod implements ClientModInitializer {
                 BuildDataPayload payload = new BuildDataPayload(
                         bossId, new BlockPos(minX, minY, minZ), sx, sy, sz, blocks);
                 ClientPlayNetworking.send(payload);
-                RETRY_COOLDOWN.put(bossId, 40); // 发送成功后冷却2秒，等服务器开始建造
+                SENT_BUILD_DATA.add(bossId);
                 AlbedoMod.LOGGER.info("已发送建造数据: {} 个方块 → boss #{}", blocks.size(), bossId);
             }
         });

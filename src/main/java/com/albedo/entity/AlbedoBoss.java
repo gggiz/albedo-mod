@@ -71,6 +71,7 @@ public class AlbedoBoss extends Monster {
     private List<BuildPlan> buildPlan = null;
     private BlockPos buildOrigin = null;
     private int buildSx, buildSy, buildSz;
+    private int buildPlaced = 0;
 
     public AlbedoBoss(EntityType<? extends Monster> type, Level level) {
         super(type, level);
@@ -260,6 +261,10 @@ public class AlbedoBoss extends Monster {
     }
 
     public void receiveBuildData(BuildDataPayload payload) {
+        if (hasBuildPlan()) {
+            AlbedoMod.LOGGER.warn("Boss已有建造计划，忽略重复数据");
+            return;
+        }
         this.buildOrigin = payload.origin();
         this.buildSx = payload.sx();
         this.buildSy = payload.sy();
@@ -278,10 +283,14 @@ public class AlbedoBoss extends Monster {
     public int getBuildSy() { return buildSy; }
     public int getBuildSz() { return buildSz; }
     public boolean hasBuildPlan() { return buildPlan != null && !buildPlan.isEmpty(); }
+    public int getBuildPlaced() { return buildPlaced; }
+    public void setBuildPlaced(int placed) { this.buildPlaced = placed; }
+    public int getBuildTotal() { return buildPlan != null ? buildPlan.size() : 0; }
 
     public void clearBuildPlan() {
         buildPlan = null;
         buildOrigin = null;
+        buildPlaced = 0;
     }
 
     public LivingEntity getOwner() {
@@ -556,7 +565,7 @@ public class AlbedoBoss extends Monster {
                     .append(" §8[§7等待投影数据...§8]"));
         } else if (isBuilding() && hasBuildPlan()) {
             this.bossBar.setName(getDisplayName().copy()
-                    .append(" §8[§d建造中 " + getBuildProgress() + "%§8]"));
+                    .append(" §8[§d建造中 " + getBuildProgress() + "% §e" + getBuildPlaced() + "/" + getBuildTotal() + "§8]"));
         } else {
             this.bossBar.setName(getDisplayName().copy()
                     .append(" §8[§5P" + getPhase() + "§8]"));

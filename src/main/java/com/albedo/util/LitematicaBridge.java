@@ -72,53 +72,42 @@ public class LitematicaBridge {
             // 获取 schematic 对象
             Object schematic = placement.getClass().getMethod("getSchematic").invoke(placement);
 
-            // 方法1: getSubRegionBoxes() — 先试 List，再试 Map
+            // 方法1: getSubRegionBoxes() — 最精确，返回世界坐标下的包围盒
             try {
                 Method getBoxes = placement.getClass().getMethod("getSubRegionBoxes");
                 Object boxes = getBoxes.invoke(placement);
-                if (boxes instanceof List<?> list && !list.isEmpty()) {
-                    Object box = list.get(0);
-                    Method getMin = box.getClass().getMethod("getMin");
-                    Method getMax = box.getClass().getMethod("getMax");
-                    BlockPos min = (BlockPos) getMin.invoke(box);
-                    BlockPos max = (BlockPos) getMax.invoke(box);
-                    AABB result = new AABB(min.getX(), min.getY(), min.getZ(),
-                            max.getX() + 1, max.getY() + 1, max.getZ() + 1);
-                    LOG.info("通过 getSubRegionBoxes(List) 获取边界: {} → {}", min, max);
-                    return result;
-                }
+                Object box = null;
                 if (boxes instanceof Map<?,?> map && !map.isEmpty()) {
-                    Object box = map.values().iterator().next();
-                    Method getMin = box.getClass().getMethod("getMin");
-                    Method getMax = box.getClass().getMethod("getMax");
-                    BlockPos min = (BlockPos) getMin.invoke(box);
-                    BlockPos max = (BlockPos) getMax.invoke(box);
+                    box = map.values().iterator().next();
+                } else if (boxes instanceof List<?> list && !list.isEmpty()) {
+                    box = list.get(0);
+                }
+                if (box != null) {
+                    BlockPos min, max;
+                    try {
+                        Method getMin = box.getClass().getMethod("getMin");
+                        Method getMax = box.getClass().getMethod("getMax");
+                        min = (BlockPos) getMin.invoke(box);
+                        max = (BlockPos) getMax.invoke(box);
+                    } catch (NoSuchMethodException e) {
+                        // Litematica 0.27.x: Box 使用 getPos1/getPos2
+                        Method getPos1 = box.getClass().getMethod("getPos1");
+                        Method getPos2 = box.getClass().getMethod("getPos2");
+                        BlockPos p1 = (BlockPos) getPos1.invoke(box);
+                        BlockPos p2 = (BlockPos) getPos2.invoke(box);
+                        min = new BlockPos(Math.min(p1.getX(), p2.getX()), Math.min(p1.getY(), p2.getY()), Math.min(p1.getZ(), p2.getZ()));
+                        max = new BlockPos(Math.max(p1.getX(), p2.getX()), Math.max(p1.getY(), p2.getY()), Math.max(p1.getZ(), p2.getZ()));
+                    }
                     AABB result = new AABB(min.getX(), min.getY(), min.getZ(),
                             max.getX() + 1, max.getY() + 1, max.getZ() + 1);
-                    LOG.info("通过 getSubRegionBoxes(Map) 获取边界: {} → {}", min, max);
+                    LOG.info("通过 getSubRegionBoxes 获取边界: {} → {}", min, max);
                     return result;
                 }
             } catch (Exception e) {
-                LOG.debug("getSubRegionBoxes 失败: {}", e.getMessage());
+                LOG.warn("getSubRegionBoxes 失败: {}", e.getMessage());
             }
 
-            // 方法2: getMetadata().getEnclosingSize() (最通用的方案)
-            try {
-                Object metadata = schematic.getClass().getMethod("getMetadata").invoke(schematic);
-                Object size = metadata.getClass().getMethod("getEnclosingSize").invoke(metadata);
-                int sx = (int) size.getClass().getMethod("getX").invoke(size);
-                int sy = (int) size.getClass().getMethod("getY").invoke(size);
-                int sz = (int) size.getClass().getMethod("getZ").invoke(size);
-                AABB result = new AABB(
-                        origin.getX(), origin.getY(), origin.getZ(),
-                        origin.getX() + sx, origin.getY() + sy, origin.getZ() + sz);
-                LOG.info("通过 getMetadata().getEnclosingSize() 获取边界: {}x{}x{}", sx, sy, sz);
-                return result;
-            } catch (Exception e) {
-                LOG.debug("getMetadata().getEnclosingSize() 失败: {}", e.getMessage());
-            }
-
-            // 方法3: getAreaPositions() / getAreaSizes()
+            // 方法2: getAreaPositions() / getAreaSizes() — 从 schematic 获取子区域偏移和大小
             try {
                 Method getPositions = schematic.getClass().getMethod("getAreaPositions");
                 Method getSizes = schematic.getClass().getMethod("getAreaSizes");
@@ -133,11 +122,27 @@ public class LitematicaBridge {
                     AABB result = new AABB(
                             origin.getX() + areaPos.getX(), origin.getY() + areaPos.getY(), origin.getZ() + areaPos.getZ(),
                             origin.getX() + areaPos.getX() + sx, origin.getY() + areaPos.getY() + sy, origin.getZ() + areaPos.getZ() + sz);
-                    LOG.info("通过 getAreaPositions/getAreaSizes 获取边界: {} x {}", areaPos, szObj);
+                    LOG.info("通过 getAreaPositions/getAreaSizes 获取边界: area={}, size={}x{}x{}", areaPos, sx, sy, sz);
                     return result;
                 }
             } catch (Exception e) {
-                LOG.debug("getAreaPositions/getAreaSizes 失败: {}", e.getMessage());
+                LOG.warn("getAreaPositions/getAreaSizes 失败: {}", e.getMessage());
+            }
+
+            // 方法3: getMetadata().getEnclosingSize() — 最后备选，但可能包含子区域间的空隙
+            try {
+                Object metadata = schematic.getClass().getMethod("getMetadata").invoke(schematic);
+                Object size = metadata.getClass().getMethod("getEnclosingSize").invoke(metadata);
+                int sx = (int) size.getClass().getMethod("getX").invoke(size);
+                int sy = (int) size.getClass().getMethod("getY").invoke(size);
+                int sz = (int) size.getClass().getMethod("getZ").invoke(size);
+                AABB result = new AABB(
+                        origin.getX(), origin.getY(), origin.getZ(),
+                        origin.getX() + sx, origin.getY() + sy, origin.getZ() + sz);
+                LOG.info("通过 getMetadata().getEnclosingSize() 获取边界: {}x{}x{} (注意：可能包含子区域间的空隙)", sx, sy, sz);
+                return result;
+            } catch (Exception e) {
+                LOG.warn("getMetadata().getEnclosingSize() 失败: {}", e.getMessage());
             }
 
             LOG.warn("所有获取投影边界的方法均失败，请检查投影是否已正确加载");

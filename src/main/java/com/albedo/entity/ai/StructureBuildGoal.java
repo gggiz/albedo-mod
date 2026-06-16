@@ -43,6 +43,7 @@ public class StructureBuildGoal extends Goal {
 
         plan = boss.getBuildPlan();
         boss.setBuildProgress(0);
+        boss.setBuildPlaced(0);
 
         if (boss.level() instanceof ServerLevel sl) {
             sl.playSound(null, boss.getX(), boss.getY(), boss.getZ(),
@@ -54,8 +55,9 @@ public class StructureBuildGoal extends Goal {
     public void tick() {
         tick++;
 
-        // 准备阶段：暖机粒子
+        // 准备阶段：暖机粒子 + 进度显示0→50%
         if (tick < AlbedoConfig.BUILD_WARMUP) {
+            boss.setBuildProgress(tick * 50 / AlbedoConfig.BUILD_WARMUP);
             if (boss.level() instanceof ServerLevel sl && tick % 4 == 0) {
                 sl.sendParticles(ParticleTypes.ENCHANTED_HIT,
                         boss.getX(), boss.getY() + 1.5, boss.getZ(),
@@ -84,6 +86,7 @@ public class StructureBuildGoal extends Goal {
                     && !target.equals(current)) {
                 world.setBlock(pos, target, 2);
                 placedCount++;
+                boss.setBuildPlaced(placedCount);
 
                 if (placedCount % 5 == 0) {
                     world.sendParticles(ParticleTypes.HAPPY_VILLAGER,
@@ -96,8 +99,8 @@ public class StructureBuildGoal extends Goal {
             processedThisTick++;
         }
 
-        // 更新进度
-        boss.setBuildProgress(plan.size() > 0 ? currentIndex * 100 / plan.size() : 0);
+        // 更新进度：建造阶段占 50→100%
+        boss.setBuildProgress(plan.size() > 0 ? 50 + currentIndex * 50 / plan.size() : 50);
 
         // 粒子环绕
         if (world instanceof ServerLevel sl && tick % 10 == 0) {
