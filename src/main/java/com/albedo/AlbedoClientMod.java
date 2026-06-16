@@ -48,8 +48,9 @@ public class AlbedoClientMod implements ClientModInitializer {
                     continue;
                 }
 
-                // 服务器已收到数据，不需要再发
-                if (boss.getBuildProgress() != 0) continue;
+                // 0=等待首次数据, 100=建造完成等待下个投影, 中间值=正在建造中不打扰
+                int progress = boss.getBuildProgress();
+                if (progress > 0 && progress < 100) continue;
 
                 // 失败后冷却重试，避免刷屏
                 int cd = RETRY_COOLDOWN.getOrDefault(bossId, 0);

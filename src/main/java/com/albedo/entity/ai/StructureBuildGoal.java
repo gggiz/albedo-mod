@@ -71,9 +71,9 @@ public class StructureBuildGoal extends Goal {
         }
 
         ServerLevel world = (ServerLevel) boss.level();
-        int placedThisTick = 0;
+        int processedThisTick = 0;
 
-        while (placedThisTick < AlbedoConfig.BUILD_BLOCKS_PER_TICK && currentIndex < plan.size()) {
+        while (processedThisTick < AlbedoConfig.BUILD_BLOCKS_PER_TICK && currentIndex < plan.size()) {
             AlbedoBoss.BuildPlan entry = plan.get(currentIndex);
             BlockPos pos = entry.pos();
             BlockState target = entry.state();
@@ -83,7 +83,6 @@ public class StructureBuildGoal extends Goal {
                     && !target.is(Blocks.STRUCTURE_VOID)
                     && !target.equals(current)) {
                 world.setBlock(pos, target, 2);
-                placedThisTick++;
                 placedCount++;
 
                 if (placedCount % 5 == 0) {
@@ -94,6 +93,7 @@ public class StructureBuildGoal extends Goal {
             }
 
             currentIndex++;
+            processedThisTick++;
         }
 
         // 更新进度
