@@ -30,7 +30,6 @@ public class StructureBuildGoal extends Goal {
     public boolean canUse() {
         if (!boss.isBuilding()) return false;
         if (boss.getAttackState() != 0) return false;
-        if (boss.isOnCooldown("build")) return false;
         if (!boss.hasBuildPlan()) return false;
         return true;
     }
@@ -118,7 +117,6 @@ public class StructureBuildGoal extends Goal {
         }
         boss.setBuildProgress(100);
         boss.clearBuildPlan();
-        boss.setCooldown("build", AlbedoConfig.BUILD_COOLDOWN);
         stop();
     }
 
