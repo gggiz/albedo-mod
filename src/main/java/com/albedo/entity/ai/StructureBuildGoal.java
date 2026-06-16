@@ -41,7 +41,6 @@ public class StructureBuildGoal extends Goal {
         placedCount = 0;
         currentIndex = 0;
         boss.setAttackState(6);
-        boss.setCooldown("build", AlbedoConfig.BUILD_COOLDOWN);
 
         plan = boss.getBuildPlan();
         boss.setBuildProgress(0);
@@ -119,6 +118,7 @@ public class StructureBuildGoal extends Goal {
         }
         boss.setBuildProgress(100);
         boss.clearBuildPlan();
+        boss.setCooldown("build", AlbedoConfig.BUILD_COOLDOWN);
         stop();
     }
 

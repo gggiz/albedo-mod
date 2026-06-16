@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "albedo",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "name": "Albedo - Guardian Overseer",
   "description": "Adds Albedo from Overlord as an epic boss fight",
   "authors": ["gggiz"],
