@@ -132,6 +132,7 @@ public class AlbedoClientMod implements ClientModInitializer {
                 BuildDataPayload payload = new BuildDataPayload(
                         bossId, new BlockPos(minX, minY, minZ), sx, sy, sz, blocks);
                 ClientPlayNetworking.send(payload);
+                RETRY_COOLDOWN.put(bossId, 40); // 发送成功后冷却2秒，等服务器开始建造
                 AlbedoMod.LOGGER.info("已发送建造数据: {} 个方块 → boss #{}", blocks.size(), bossId);
             }
         });
