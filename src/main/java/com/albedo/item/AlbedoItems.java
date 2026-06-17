@@ -7,6 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Unit;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -14,7 +15,10 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.TypedEntityData;
+
+import java.util.List;
 
 public class AlbedoItems {
     public static final Item HELL_ABYSS = Registry.register(
@@ -24,7 +28,15 @@ public class AlbedoItems {
                     .setId(ResourceKey.create(Registries.ITEM, AlbedoMod.id("hell_abyss")))
                     .stacksTo(1)
                     .fireResistant()
-                    .component(DataComponents.UNBREAKABLE, Unit.INSTANCE))
+                    .component(DataComponents.UNBREAKABLE, Unit.INSTANCE)
+                    .component(DataComponents.LORE, new ItemLore(List.of(
+                            Component.translatable("item.albedo.hell_abyss.desc1")
+                                    .withStyle(ChatFormatting.DARK_PURPLE),
+                            Component.translatable("item.albedo.hell_abyss.desc2")
+                                    .withStyle(ChatFormatting.RED),
+                            Component.translatable("item.albedo.hell_abyss.desc3")
+                                    .withStyle(ChatFormatting.GOLD)
+                    ))))
     );
 
     public static final Item SUCCUBUS_HORN = Registry.register(

@@ -14,5 +14,8 @@
   "subtitles.entity.albedo.death": "雅儿贝德倒下",
   "subtitles.entity.albedo.hurt": "雅儿贝德：受伤",
   "subtitles.entity.albedo.ambient": "雅儿贝德：低语",
-  "subtitles.item.albedo.grand_arcana_chant": "大阿卡纳光破斩：吟唱"
+  "subtitles.item.albedo.grand_arcana_chant": "大阿卡纳光破斩：吟唱",
+  "item.albedo.hell_abyss.desc1": "右键：释放深渊斩击波（5道×12伤害）",
+  "item.albedo.hell_abyss.desc2": "对带护甲敌人额外造成40点魔法伤害",
+  "item.albedo.hell_abyss.desc3": "无法破坏"
 }

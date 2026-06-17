@@ -14,5 +14,8 @@
   "subtitles.entity.albedo.death": "Albedo falls",
   "subtitles.entity.albedo.hurt": "Albedo hurts",
   "subtitles.entity.albedo.ambient": "Albedo mutters",
-  "subtitles.item.albedo.grand_arcana_chant": "Grand Arcana: Chanting"
+  "subtitles.item.albedo.grand_arcana_chant": "Grand Arcana: Chanting",
+  "item.albedo.hell_abyss.desc1": "Right-click: Abyss Slash Wave (12 dmg x 5 arcs)",
+  "item.albedo.hell_abyss.desc2": "+40 magic damage vs armored enemies",
+  "item.albedo.hell_abyss.desc3": "Unbreakable"
 }
