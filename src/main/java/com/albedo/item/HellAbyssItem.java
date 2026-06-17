@@ -28,7 +28,7 @@ public class HellAbyssItem extends AxeItem {
 
     private static final ToolMaterial HELL_ABYSS_MATERIAL = new ToolMaterial(
             BlockTags.INCORRECT_FOR_NETHERITE_TOOL,
-            2500,
+            0,
             10.0f,
             5.0f,
             22,
