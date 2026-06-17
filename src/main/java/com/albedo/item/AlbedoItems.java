@@ -4,6 +4,7 @@ import com.albedo.AlbedoMod;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.util.Unit;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -22,7 +23,8 @@ public class AlbedoItems {
             new HellAbyssItem(new Item.Properties()
                     .setId(ResourceKey.create(Registries.ITEM, AlbedoMod.id("hell_abyss")))
                     .stacksTo(1)
-                    .fireResistant())
+                    .fireResistant()
+                    .component(DataComponents.UNBREAKABLE, Unit.INSTANCE))
     );
 
     public static final Item SUCCUBUS_HORN = Registry.register(
