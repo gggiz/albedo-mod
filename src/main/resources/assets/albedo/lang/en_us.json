@@ -1,8 +1,11 @@
 {
+  "itemGroup.albedo": "Albedo Mod",
   "entity.albedo.albedo": "Albedo, Guardian Overseer",
   "item.albedo.hell_abyss": "Hell Abyss",
   "item.albedo.succubus_horn": "Succubus Horn",
   "item.albedo.guardian_shard": "Guardian Shard",
+  "item.albedo.grand_arcana_light_breaker": "Grand Arcana Light Breaker",
+  "item.albedo.albedo_spawn_egg": "Albedo Spawn Egg",
   "subtitles.entity.albedo.sweep": "Albedo sweeps",
   "subtitles.entity.albedo.thrust": "Albedo thrusts",
   "subtitles.entity.albedo.wave": "Abyss wave approaches",
@@ -10,5 +13,6 @@
   "subtitles.entity.albedo.phase_change": "Albedo's armor cracks",
   "subtitles.entity.albedo.death": "Albedo falls",
   "subtitles.entity.albedo.hurt": "Albedo hurts",
-  "subtitles.entity.albedo.ambient": "Albedo mutters"
+  "subtitles.entity.albedo.ambient": "Albedo mutters",
+  "subtitles.item.albedo.grand_arcana_chant": "Grand Arcana: Chanting"
 }

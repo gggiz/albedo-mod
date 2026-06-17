@@ -15,6 +15,7 @@ public class AlbedoSounds {
     public static final SoundEvent DEATH = register("entity.albedo.death");
     public static final SoundEvent HURT = register("entity.albedo.hurt");
     public static final SoundEvent AMBIENT = register("entity.albedo.ambient");
+    public static final SoundEvent GRAND_ARCANA_CHANT = register("grand_arcana_chant");
 
     private static SoundEvent register(String name) {
         Identifier id = AlbedoMod.id(name);

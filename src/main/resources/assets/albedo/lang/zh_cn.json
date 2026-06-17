@@ -1,8 +1,11 @@
 {
+  "itemGroup.albedo": "雅儿贝德模组",
   "entity.albedo.albedo": "雅儿贝德，守护者总管",
   "item.albedo.hell_abyss": "地狱深渊",
   "item.albedo.succubus_horn": "魅魔之角",
   "item.albedo.guardian_shard": "守护者碎片",
+  "item.albedo.grand_arcana_light_breaker": "以爱与憎之名-大阿卡纳光破斩！！！",
+  "item.albedo.albedo_spawn_egg": "雅儿贝德刷怪蛋",
   "subtitles.entity.albedo.sweep": "雅儿贝德：横扫",
   "subtitles.entity.albedo.thrust": "雅儿贝德：突刺",
   "subtitles.entity.albedo.wave": "深渊斩击波袭来",
@@ -10,5 +13,6 @@
   "subtitles.entity.albedo.phase_change": "雅儿贝德的装甲碎裂",
   "subtitles.entity.albedo.death": "雅儿贝德倒下",
   "subtitles.entity.albedo.hurt": "雅儿贝德：受伤",
-  "subtitles.entity.albedo.ambient": "雅儿贝德：低语"
+  "subtitles.entity.albedo.ambient": "雅儿贝德：低语",
+  "subtitles.item.albedo.grand_arcana_chant": "大阿卡纳光破斩：吟唱"
 }

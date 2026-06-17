@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "albedo:item/grand_arcana_light_breaker"
+  }
+}

@@ -30,5 +30,9 @@
   "entity.albedo.ambient": {
     "subtitle": "subtitles.entity.albedo.ambient",
     "sounds": ["albedo:ambient1", "albedo:ambient2"]
+  },
+  "grand_arcana_chant": {
+    "subtitle": "subtitles.item.albedo.grand_arcana_chant",
+    "sounds": ["albedo:grand_arcana_chant"]
   }
 }
