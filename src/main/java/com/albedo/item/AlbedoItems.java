@@ -66,6 +66,8 @@ public class AlbedoItems {
     );
 
     public static Item ALBEDO_SPAWN_EGG;
+    public static Item AXOLOTL_MAGE_SPAWN_EGG;
+    public static Item RED_EMPEROR_AZURE_STAR;
     public static CreativeModeTab ALBEDO_TAB;
 
     public static void init() {
@@ -77,6 +79,23 @@ public class AlbedoItems {
                         .component(DataComponents.ENTITY_DATA, TypedEntityData.of(AlbedoMod.ALBEDO, new CompoundTag())))
         );
 
+        AXOLOTL_MAGE_SPAWN_EGG = Registry.register(
+                BuiltInRegistries.ITEM,
+                ResourceKey.create(Registries.ITEM, AlbedoMod.id("axolotl_mage_spawn_egg")),
+                new SpawnEggItem(new Item.Properties()
+                        .setId(ResourceKey.create(Registries.ITEM, AlbedoMod.id("axolotl_mage_spawn_egg")))
+                        .component(DataComponents.ENTITY_DATA, TypedEntityData.of(AlbedoMod.AXOLOTL_MAGE, new CompoundTag())))
+        );
+
+        RED_EMPEROR_AZURE_STAR = Registry.register(
+                BuiltInRegistries.ITEM,
+                ResourceKey.create(Registries.ITEM, AlbedoMod.id("red_emperor_azure_star")),
+                new RedEmperorAzureStarItem(new Item.Properties()
+                        .setId(ResourceKey.create(Registries.ITEM, AlbedoMod.id("red_emperor_azure_star")))
+                        .stacksTo(1)
+                        .fireResistant())
+        );
+
         ALBEDO_TAB = Registry.register(
                 BuiltInRegistries.CREATIVE_MODE_TAB,
                 ResourceKey.create(Registries.CREATIVE_MODE_TAB, AlbedoMod.id("albedo_tab")),
@@ -85,6 +104,8 @@ public class AlbedoItems {
                         .icon(() -> new ItemStack(ALBEDO_SPAWN_EGG))
                         .displayItems((params, output) -> {
                             output.accept(ALBEDO_SPAWN_EGG);
+                            output.accept(AXOLOTL_MAGE_SPAWN_EGG);
+                            output.accept(RED_EMPEROR_AZURE_STAR);
                             output.accept(HELL_ABYSS);
                             output.accept(SUCCUBUS_HORN);
                             output.accept(GUARDIAN_SHARD);

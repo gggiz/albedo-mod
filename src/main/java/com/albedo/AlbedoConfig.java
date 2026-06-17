@@ -33,4 +33,22 @@ public class AlbedoConfig {
     public static final float THRUST_DAMAGE = 22.0f;
     public static final float WAVE_DAMAGE = 12.0f;
     public static final float JUDGMENT_DAMAGE = 25.0f;
+
+    // Axolotl Mage
+    public static final double AXOLOTL_MAGE_HEALTH = 60.0;
+    public static final double AXOLOTL_MAGE_ATTACK = 6.0;
+    public static final double AXOLOTL_MAGE_ARMOR = 8.0;
+    public static final double AXOLOTL_MAGE_SPEED = 0.28;
+    public static final int AXOLOTL_MAGE_FOLLOW_RANGE = 32;
+    public static final int AXOLOTL_MAGE_BUFF_INTERVAL = 60;
+    public static final int AXOLOTL_MAGE_BUFF_RADIUS = 16;
+    public static final int AXOLOTL_MAGE_HEAL_INTERVAL = 80;
+    public static final float AXOLOTL_MAGE_HEAL_AMOUNT = 4.0f;
+    public static final int WATER_BOLT_COOLDOWN = 20;
+    public static final float WATER_BOLT_DAMAGE = 8.0f;
+    public static final int WATER_FIELD_COOLDOWN = 80;
+    public static final float WATER_FIELD_DAMAGE = 8.0f;
+    public static final int AXOLOTL_MISSILE_COOLDOWN = 200;
+    public static final float AXOLOTL_MISSILE_DAMAGE = 18.0f;
+    public static final float AXOLOTL_MISSILE_SPLASH_DAMAGE = 8.0f;
 }

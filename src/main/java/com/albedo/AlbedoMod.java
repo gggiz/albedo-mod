@@ -2,11 +2,14 @@ package com.albedo;
 
 import com.albedo.chat.AlbedoChatManager;
 import com.albedo.entity.AlbedoBoss;
+import com.albedo.entity.AxolotlMage;
 import com.albedo.item.AlbedoItems;
 import com.albedo.network.BuildDataPayload;
 import com.albedo.sound.AlbedoSounds;
 import net.fabricmc.api.ModInitializer;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -23,6 +26,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.levelgen.Heightmap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +44,33 @@ public class AlbedoMod implements ModInitializer {
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id("albedo")))
     );
 
+    public static final EntityType<AxolotlMage> AXOLOTL_MAGE = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            ResourceKey.create(Registries.ENTITY_TYPE, id("axolotl_mage")).identifier(),
+            EntityType.Builder.of(AxolotlMage::new, MobCategory.CREATURE)
+                    .sized(0.6f, 1.95f)
+                    .eyeHeight(1.75f)
+                    .clientTrackingRange(8)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id("axolotl_mage")))
+    );
+
     @Override
     public void onInitialize() {
         LOGGER.info("Albedo - Guardian Overseer initializing...");
         AlbedoItems.init();
         AlbedoSounds.init();
         FabricDefaultAttributeRegistry.register(ALBEDO, AlbedoBoss.createAttributes());
+        FabricDefaultAttributeRegistry.register(AXOLOTL_MAGE, AxolotlMage.createAttributes());
+
+        BiomeModifications.addSpawn(
+                BiomeSelectors.tag(net.minecraft.tags.BiomeTags.IS_OCEAN),
+                MobCategory.CREATURE, AXOLOTL_MAGE, 4, 1, 1);
+        BiomeModifications.addSpawn(
+                BiomeSelectors.tag(net.minecraft.tags.BiomeTags.IS_RIVER),
+                MobCategory.CREATURE, AXOLOTL_MAGE, 3, 1, 1);
+        BiomeModifications.addSpawn(
+                BiomeSelectors.tag(net.minecraft.tags.BiomeTags.IS_BEACH),
+                MobCategory.CREATURE, AXOLOTL_MAGE, 2, 1, 1);
 
         AlbedoChatManager.loadConfig(FabricLoader.getInstance().getConfigDir());
         ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) ->

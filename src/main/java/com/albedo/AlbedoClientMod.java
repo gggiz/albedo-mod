@@ -30,6 +30,7 @@ public class AlbedoClientMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         EntityRendererRegistry.register(AlbedoMod.ALBEDO, com.albedo.entity.AlbedoRenderer::new);
+        EntityRendererRegistry.register(AlbedoMod.AXOLOTL_MAGE, com.albedo.entity.AxolotlMageRenderer::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.level == null || client.player == null) return;

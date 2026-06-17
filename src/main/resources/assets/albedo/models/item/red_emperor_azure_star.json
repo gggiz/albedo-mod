@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "albedo:item/red_emperor_azure_star"
+  }
+}

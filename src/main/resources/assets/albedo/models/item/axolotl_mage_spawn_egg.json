@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "albedo:item/axolotl_mage_spawn_egg"
+  }
+}

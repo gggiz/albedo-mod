@@ -17,5 +17,12 @@
   "subtitles.item.albedo.grand_arcana_chant": "大阿卡纳光破斩：吟唱",
   "item.albedo.hell_abyss.desc1": "右键：释放深渊斩击波（5道×12伤害）",
   "item.albedo.hell_abyss.desc2": "对带护甲敌人额外造成40点魔法伤害",
-  "item.albedo.hell_abyss.desc3": "无法破坏"
+  "item.albedo.hell_abyss.desc3": "无法破坏",
+  "item.albedo.red_emperor_azure_star": "赤帝苍星",
+  "entity.albedo.axolotl_mage": "美西螈法师",
+  "item.albedo.axolotl_mage_spawn_egg": "美西螈法师刷怪蛋",
+  "subtitles.entity.albedo.axolotl_mage.hurt": "美西螈法师：受伤",
+  "subtitles.entity.albedo.axolotl_mage.death": "美西螈法师：消散",
+  "subtitles.entity.albedo.axolotl_mage.ambient": "美西螈法师：低吟",
+  "subtitles.entity.albedo.axolotl_mage.cast": "美西螈法师：施法"
 }

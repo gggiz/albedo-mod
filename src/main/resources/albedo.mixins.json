@@ -3,7 +3,9 @@
   "package": "com.albedo.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ItemEntityMixin"
+    "ItemEntityMixin",
+    "MonsterTargetMixin",
+    "PlayerTickMixin"
   ],
   "injectors": {
     "defaultRequire": 1
