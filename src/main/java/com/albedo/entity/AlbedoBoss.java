@@ -156,7 +156,10 @@ public class AlbedoBoss extends Monster {
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true,
                 (living, level) -> !(living instanceof Player) && !(living instanceof AlbedoBoss)
                         && living.getType() != EntityType.CAT && living.getType() != EntityType.WOLF
-                        && !living.entityTags().contains("albedo_clone")) {
+                        && !living.entityTags().contains("albedo_clone")
+                        && (living instanceof Monster
+                            || living.getType() == EntityType.VILLAGER
+                            || living.getType() == EntityType.IRON_GOLEM)) {
             @Override
             public boolean canUse() {
                 if (((AlbedoBoss) this.mob).isBuilding()) return false;
