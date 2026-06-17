@@ -61,6 +61,13 @@ public class HellAbyssItem extends AxeItem {
     }
 
     @Override
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        if (target.getArmorValue() > 0) {
+            target.hurt(attacker.damageSources().magic(), 40.0f);
+        }
+    }
+
+    @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.getCooldowns().isOnCooldown(stack)) return InteractionResult.FAIL;
