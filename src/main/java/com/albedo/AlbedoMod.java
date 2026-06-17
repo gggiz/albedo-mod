@@ -64,13 +64,19 @@ public class AlbedoMod implements ModInitializer {
 
         BiomeModifications.addSpawn(
                 BiomeSelectors.tag(net.minecraft.tags.BiomeTags.IS_OCEAN),
-                MobCategory.CREATURE, AXOLOTL_MAGE, 4, 1, 1);
+                MobCategory.CREATURE, AXOLOTL_MAGE, 10, 1, 2);
         BiomeModifications.addSpawn(
                 BiomeSelectors.tag(net.minecraft.tags.BiomeTags.IS_RIVER),
-                MobCategory.CREATURE, AXOLOTL_MAGE, 3, 1, 1);
+                MobCategory.CREATURE, AXOLOTL_MAGE, 8, 1, 2);
         BiomeModifications.addSpawn(
                 BiomeSelectors.tag(net.minecraft.tags.BiomeTags.IS_BEACH),
-                MobCategory.CREATURE, AXOLOTL_MAGE, 2, 1, 1);
+                MobCategory.CREATURE, AXOLOTL_MAGE, 5, 1, 1);
+        BiomeModifications.addSpawn(
+                BiomeSelectors.tag(net.minecraft.tags.BiomeTags.HAS_SWAMP_HUT),
+                MobCategory.CREATURE, AXOLOTL_MAGE, 6, 1, 2);
+        BiomeModifications.addSpawn(
+                BiomeSelectors.tag(net.minecraft.tags.BiomeTags.IS_JUNGLE),
+                MobCategory.CREATURE, AXOLOTL_MAGE, 3, 1, 1);
 
         AlbedoChatManager.loadConfig(FabricLoader.getInstance().getConfigDir());
         ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) ->
