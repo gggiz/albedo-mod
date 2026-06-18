@@ -155,6 +155,7 @@ public class AlbedoBoss extends Monster {
         });
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true,
                 (living, level) -> !(living instanceof Player) && !(living instanceof AlbedoBoss)
+                        && !(living instanceof AxolotlMage)
                         && living.getType() != EntityType.CAT && living.getType() != EntityType.WOLF
                         && !living.entityTags().contains("albedo_clone")
                         && (living instanceof Monster
