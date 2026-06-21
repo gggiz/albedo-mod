@@ -38,7 +38,7 @@ public class AlbedoChatManager {
     private static Path configPath;
 
     private static final Map<UUID, List<ChatMessage>> histories = new ConcurrentHashMap<>();
-    private static final int MAX_HISTORY = 16;
+    private static final int MAX_HISTORY = 40;
 
     private static final String CHARACTER_PROMPT = """
             你是雅儿贝德（Albedo），纳萨力克大坟墓的守护者总管，种族是魅魔。
@@ -253,7 +253,7 @@ public class AlbedoChatManager {
             body.addProperty("model", "deepseek-chat");
             body.add("messages", messages);
             body.addProperty("temperature", 0.8);
-            body.addProperty("max_tokens", 150);
+            body.addProperty("max_tokens", 350);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl))

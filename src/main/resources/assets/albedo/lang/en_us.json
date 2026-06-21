@@ -24,5 +24,9 @@
   "subtitles.entity.albedo.axolotl_mage.hurt": "Axolotl Mage hurts",
   "subtitles.entity.albedo.axolotl_mage.death": "Axolotl Mage dissipates",
   "subtitles.entity.albedo.axolotl_mage.ambient": "Axolotl Mage murmurs",
-  "subtitles.entity.albedo.axolotl_mage.cast": "Axolotl Mage casts"
+  "subtitles.entity.albedo.axolotl_mage.cast": "Axolotl Mage casts",
+  "item.albedo.sword_of_nunoboko": "Sword of Nunoboko",
+  "item.albedo.nunoboko.desc1": "Left-click: Tear a spatial rift (25 dmg)",
+  "item.albedo.nunoboko.desc2": "Right-click · Cross Fire: Incinerating cross pillars (50 dmg)",
+  "item.albedo.nunoboko.desc3": "§5Sword of Nunoboko · All returns to nothing"
 }

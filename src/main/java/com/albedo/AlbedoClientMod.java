@@ -2,12 +2,15 @@ package com.albedo;
 
 import com.albedo.entity.AlbedoBoss;
 import com.albedo.network.BuildDataPayload;
+import com.albedo.particle.AlbedoParticles;
+import com.albedo.particle.NunobokoGlowParticle;
+import com.albedo.particle.RiftBlockParticle;
 import com.albedo.util.LitematicaBridge;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -31,6 +34,14 @@ public class AlbedoClientMod implements ClientModInitializer {
     public void onInitializeClient() {
         EntityRendererRegistry.register(AlbedoMod.ALBEDO, com.albedo.entity.AlbedoRenderer::new);
         EntityRendererRegistry.register(AlbedoMod.AXOLOTL_MAGE, com.albedo.entity.AxolotlMageRenderer::new);
+
+        // 注册天沼矛自定义粒子Provider
+        ParticleProviderRegistry.getInstance().register(
+                AlbedoParticles.NUNOBOKO_GLOW,
+                NunobokoGlowParticle.Factory::new);
+        ParticleProviderRegistry.getInstance().register(
+                AlbedoParticles.RIFT_BLOCK,
+                RiftBlockParticle.Factory::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.level == null || client.player == null) return;

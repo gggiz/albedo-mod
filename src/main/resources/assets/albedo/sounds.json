@@ -34,5 +34,17 @@
   "grand_arcana_chant": {
     "subtitle": "subtitles.item.albedo.grand_arcana_chant",
     "sounds": ["albedo:grand_arcana_chant"]
+  },
+  "nunoboko_equip": {
+    "subtitle": "subtitles.item.albedo.nunoboko_equip",
+    "sounds": ["albedo:nunoboko_equip"]
+  },
+  "nunoboko_rift": {
+    "subtitle": "subtitles.item.albedo.nunoboko_rift",
+    "sounds": ["albedo:nunoboko_rift"]
+  },
+  "nunoboko_cross_fire": {
+    "subtitle": "subtitles.item.albedo.nunoboko_cross_fire",
+    "sounds": ["albedo:nunoboko_cross_fire"]
   }
 }

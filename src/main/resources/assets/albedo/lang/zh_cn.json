@@ -24,5 +24,9 @@
   "subtitles.entity.albedo.axolotl_mage.hurt": "美西螈法师：受伤",
   "subtitles.entity.albedo.axolotl_mage.death": "美西螈法师：消散",
   "subtitles.entity.albedo.axolotl_mage.ambient": "美西螈法师：低吟",
-  "subtitles.entity.albedo.axolotl_mage.cast": "美西螈法师：施法"
+  "subtitles.entity.albedo.axolotl_mage.cast": "美西螈法师：施法",
+  "item.albedo.sword_of_nunoboko": "天沼矛之剑",
+  "item.albedo.nunoboko.desc1": "左键：撕裂空间裂缝（25伤害）",
+  "item.albedo.nunoboko.desc2": "右键·十字奉火：十字火柱焚尽（50伤害）",
+  "item.albedo.nunoboko.desc3": "§5天沼矛·万象归无"
 }

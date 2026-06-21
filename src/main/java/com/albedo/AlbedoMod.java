@@ -5,6 +5,7 @@ import com.albedo.entity.AlbedoBoss;
 import com.albedo.entity.AxolotlMage;
 import com.albedo.item.AlbedoItems;
 import com.albedo.network.BuildDataPayload;
+import com.albedo.particle.AlbedoParticles;
 import com.albedo.sound.AlbedoSounds;
 import net.fabricmc.api.ModInitializer;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -58,6 +59,7 @@ public class AlbedoMod implements ModInitializer {
     public void onInitialize() {
         LOGGER.info("Albedo - Guardian Overseer initializing...");
         AlbedoItems.init();
+        AlbedoParticles.init();
         AlbedoSounds.init();
         FabricDefaultAttributeRegistry.register(ALBEDO, AlbedoBoss.createAttributes());
         FabricDefaultAttributeRegistry.register(AXOLOTL_MAGE, AxolotlMage.createAttributes());

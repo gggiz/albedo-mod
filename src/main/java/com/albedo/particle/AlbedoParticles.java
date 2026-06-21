@@ -12,6 +12,18 @@ public class AlbedoParticles {
             new ShadowParticleType()
     );
 
+    public static final NunobokoParticleType NUNOBOKO_GLOW = Registry.register(
+            BuiltInRegistries.PARTICLE_TYPE,
+            AlbedoMod.id("nunoboko_glow"),
+            new NunobokoParticleType(false)
+    );
+
+    public static final RiftBlockParticleType RIFT_BLOCK = Registry.register(
+            BuiltInRegistries.PARTICLE_TYPE,
+            AlbedoMod.id("rift_block"),
+            new RiftBlockParticleType(false)
+    );
+
     public static void init() {
         // Static initializer
     }

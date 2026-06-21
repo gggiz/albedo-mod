@@ -65,6 +65,24 @@ public class AlbedoItems {
                     .fireResistant())
     );
 
+    public static final Item SWORD_OF_NUNOBOKO = Registry.register(
+            BuiltInRegistries.ITEM,
+            AlbedoMod.id("sword_of_nunoboko"),
+            new SwordOfNunoboko(new Item.Properties()
+                    .setId(ResourceKey.create(Registries.ITEM, AlbedoMod.id("sword_of_nunoboko")))
+                    .stacksTo(1)
+                    .fireResistant()
+                    .component(DataComponents.UNBREAKABLE, Unit.INSTANCE)
+                    .component(DataComponents.LORE, new ItemLore(List.of(
+                            Component.translatable("item.albedo.nunoboko.desc1")
+                                    .withStyle(ChatFormatting.DARK_PURPLE),
+                            Component.translatable("item.albedo.nunoboko.desc2")
+                                    .withStyle(ChatFormatting.BLACK),
+                            Component.translatable("item.albedo.nunoboko.desc3")
+                                    .withStyle(ChatFormatting.DARK_GRAY)
+                    ))))
+    );
+
     public static Item ALBEDO_SPAWN_EGG;
     public static Item AXOLOTL_MAGE_SPAWN_EGG;
     public static Item RED_EMPEROR_AZURE_STAR;
@@ -110,6 +128,7 @@ public class AlbedoItems {
                             output.accept(SUCCUBUS_HORN);
                             output.accept(GUARDIAN_SHARD);
                             output.accept(GRAND_ARCANA_LIGHT_BREAKER);
+                            output.accept(SWORD_OF_NUNOBOKO);
                         })
                         .build()
         );
