@@ -327,7 +327,7 @@ public class AlbedoBoss extends Monster {
                 getAttribute(Attributes.MOVEMENT_SPEED)
                         .setBaseValue(AlbedoConfig.MOVEMENT_SPEED * 1.4);
             }
-            playSound(AlbedoSounds.PHASE_CHANGE, 0.5f, 1.0f);
+            playSound(net.minecraft.sounds.SoundEvents.WITHER_SPAWN, 0.5f, 1.0f);
             if (level() instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.EXPLOSION,
                         getX(), getY() + 1.5, getZ(),
@@ -625,7 +625,7 @@ public class AlbedoBoss extends Monster {
 
     @Override
     protected SoundEvent getDeathSound() {
-        return AlbedoSounds.DEATH;
+        return net.minecraft.sounds.SoundEvents.WITHER_DEATH;
     }
 
     @Override
