@@ -4,6 +4,7 @@ import com.albedo.AlbedoConfig;
 import com.albedo.AlbedoMod;
 import com.albedo.entity.ai.*;
 import com.albedo.network.BuildDataPayload;
+import com.albedo.sound.AlbedoSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -326,7 +327,7 @@ public class AlbedoBoss extends Monster {
                 getAttribute(Attributes.MOVEMENT_SPEED)
                         .setBaseValue(AlbedoConfig.MOVEMENT_SPEED * 1.4);
             }
-            playSound(net.minecraft.sounds.SoundEvents.WITHER_SPAWN, 0.5f, 1.0f);
+            playSound(AlbedoSounds.PHASE_CHANGE, 0.5f, 1.0f);
             if (level() instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.EXPLOSION,
                         getX(), getY() + 1.5, getZ(),
@@ -624,12 +625,12 @@ public class AlbedoBoss extends Monster {
 
     @Override
     protected SoundEvent getDeathSound() {
-        return net.minecraft.sounds.SoundEvents.WITHER_DEATH;
+        return AlbedoSounds.DEATH;
     }
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return net.minecraft.sounds.SoundEvents.WITHER_AMBIENT;
+        return AlbedoSounds.AMBIENT;
     }
 
     @Override

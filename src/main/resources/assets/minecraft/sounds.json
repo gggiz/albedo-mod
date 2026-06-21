@@ -1,0 +1,50 @@
+{
+  "entity.cat.ambient": {
+    "subtitle": "subtitles.entity.cat.ambient",
+    "sounds": [
+      "minecraft:laowu1",
+      "minecraft:laowu2",
+      "minecraft:laowu_gentle",
+      "minecraft:manbo",
+      "minecraft:laba",
+      "minecraft:nigao"
+    ]
+  },
+  "entity.cat.hiss": {
+    "subtitle": "subtitles.entity.cat.hiss",
+    "sounds": ["minecraft:haqi"]
+  },
+  "entity.cat.hurt": {
+    "subtitle": "subtitles.entity.cat.hurt",
+    "sounds": ["minecraft:laowu_fierce"]
+  },
+  "entity.cat.death": {
+    "subtitle": "subtitles.entity.cat.death",
+    "sounds": ["minecraft:huqi"]
+  },
+  "entity.cat.purreow": {
+    "subtitle": "subtitles.entity.cat.purreow",
+    "sounds": [
+      "minecraft:laowu_gentle",
+      "minecraft:laowu1"
+    ]
+  },
+  "entity.cat.stray_ambient": {
+    "subtitle": "subtitles.entity.cat.stray_ambient",
+    "sounds": [
+      "minecraft:laowu1",
+      "minecraft:laowu2",
+      "minecraft:laowu_gentle",
+      "minecraft:manbo",
+      "minecraft:laba",
+      "minecraft:nigao"
+    ]
+  },
+  "entity.cat.beg_for_food": {
+    "subtitle": "subtitles.entity.cat.beg_for_food",
+    "sounds": [
+      "minecraft:laowu_gentle",
+      "minecraft:manbo"
+    ]
+  }
+}
